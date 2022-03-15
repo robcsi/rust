@@ -23,13 +23,16 @@ trait ProgressDisplay: Sized {
 
 impl ProgressDisplay for Unbounded {
     fn display<Iter>(&self, progress: &Progress<Iter, Self>) {
-        println!("{}", "*".repeat(progress.i));
+        println!("{}", "\u{2588}".repeat(progress.i));
     }
 }
 
 impl ProgressDisplay for Bounded {
     fn display<Iter>(&self, progress: &Progress<Iter, Self>) {
-        println!("{}{}{}{}", self.delims.0, "*".repeat(progress.i), " ".repeat(self.bound - progress.i), self.delims.1);
+
+        let percentage = (progress.i * 100) / self.bound;
+
+        println!("{:3}% {}{}{}{}", percentage, self.delims.0, "\u{2588}".repeat(progress.i), " ".repeat(self.bound - progress.i), self.delims.1);
     }
 }
 
@@ -84,17 +87,17 @@ fn expensive_calculation(_n: &i32) {
 }
 
 fn main() {
-    let brackets = ('<', '>');
+    let brackets = ('[', ']');
 
     // let x = 1.progress();
-    let v: Vec<i32> = vec![1, 2, 3, 4, 5];
+    let v: Vec<i32> = (1..=10).collect();
     for n in v.iter().progress().with_bound().with_delims(brackets) { // trait ExactSizeIterator: Iterator - an interator that knows its exact length
         expensive_calculation(n);
     }
 
-    for n in (0 .. ).progress()
-        //.with_bound().with_delims(brackets)
-    {
-        expensive_calculation(&n);
-    }
+    // for n in (0 .. ).progress()
+    //     //.with_bound().with_delims(brackets) // does not compile because of unsatisfied trait bounds
+    // {
+    //     expensive_calculation(&n);
+    // }
 }
