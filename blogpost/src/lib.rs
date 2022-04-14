@@ -80,3 +80,48 @@ impl Post {
     }
 }
 
+pub struct Post2 {
+    content: String,
+}
+
+pub struct DraftPost {
+    content: String,
+}
+
+pub struct PendingReviewPost {
+    content: String,
+}
+
+impl Post2 {
+    pub fn new() -> DraftPost {
+        DraftPost {
+            content: String::new(),
+        }
+    }
+
+    pub fn content(&self) -> &str {
+        &self.content
+    }
+}
+
+impl DraftPost {
+    pub fn add_text(&mut self, text: &str) {
+        self.content.push_str(text);
+
+        // let p = Post2 { content: "s".to_owned() }; // not true that Post2 cannot be created
+    }
+
+    pub fn request_review(self) -> PendingReviewPost {
+        PendingReviewPost {
+            content: self.content,
+        }
+    }
+}
+
+impl PendingReviewPost {
+    pub fn approve(self) -> Post2 {
+        Post2 {
+            content: self.content,
+        }
+    }
+}
